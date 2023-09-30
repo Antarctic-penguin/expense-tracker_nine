@@ -12,7 +12,7 @@ const seedUser = {
 }
 
 //新增資料
-db.once('open', async () => {
+db.once('open', () => {
   User.create({
       name: seedUser.name,
       email: seedUser.email,
@@ -26,8 +26,7 @@ db.once('open', async () => {
           return category.findOne({ name: categoryName }).then((category) =>
             Record.create({
               name: seedRecord[i].name,
-              category: category._id, // 使用 category._id 來建立關聯
-              date: seedRecord[i].date,
+              category: category._id,
               amount: seedRecord[i].amount,
               userId,
             })
