@@ -3,6 +3,7 @@ const db = require('../../config/mongoose')
 const User = require("../users")
 const seedRecord = require('./record.json')
 const category = require("../category")
+const bcrypt = require('bcryptjs')
 
 const seedUser = {
   name: '廣志',
@@ -13,11 +14,14 @@ const seedUser = {
 
 //新增資料
 db.once('open', () => {
-  User.create({
+  bcrypt
+    .genSalt(10)
+    .then(salt => bcrypt.hash(seedUser.password, salt))
+    .then(hash => User.create({
       name: seedUser.name,
       email: seedUser.email,
-      password: seedUser.password,
-    })
+      password: hash
+    }))
     .then(user => {
       const userId = user._id;
       return Promise.all(
@@ -27,6 +31,7 @@ db.once('open', () => {
             Record.create({
               name: seedRecord[i].name,
               category: category._id,
+              date: seedRecord[i].date,
               amount: seedRecord[i].amount,
               userId,
             })
